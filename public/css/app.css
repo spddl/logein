@@ -1,0 +1,38 @@
+.scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+.scrollbar::-webkit-scrollbar-track { background: #ddd; }
+.scrollbar::-webkit-scrollbar-thumb { background: #666; }
+.scrollbar {
+  height: calc(100vh - 80px)
+}
+
+.uk-table-small td, .uk-table-small th {
+  padding: 0px 5px
+}
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important
+}
+[scroll-glue] {
+  overflow-y: scroll;
+}
+.uk-text-small {
+  line-height: 1.2;
+}
+
+table {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  font-family: 'Inconsolata', Courier, sans-serif;
+}
+
+#inp {
+  visibility:hidden;
+}
+#color-picker-wrapper {
+  background-color:black;
+  height:10px;
+  width:10px;
+  position:fixed;
+  margin-top: 6px;
+  margin-left: 1px;
+}

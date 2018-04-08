@@ -1,0 +1,14 @@
+// log.proto
+package log;
+syntax = "proto3";
+
+message Data {
+  optional int64 timestamp = 1;
+  optional string app = 2;
+  optional string lvl = 3;
+  optional string msg = 4;
+}
+
+message set {
+  repeated Data data = 1;
+}

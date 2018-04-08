@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="App" ng-controller="Ctrl" ng-style="options.dark && {'background':'rgb(34, 34, 34)'}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Logein</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/uikit.min.css">
+  <link rel="stylesheet" href="css/app.css">
+  <link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+</head>
+<body ng-class="{'uk-light': options.dark, 'uk-dark': !options.dark }">
+  <div uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
+    <nav class="uk-navbar-container uk-navbar-transparent" ng-class="{'uk-background-default': !options.dark, 'uk-background-secondary': options.dark }" uk-navbar style="position: relative; z-index: 980;">
+      <div class="uk-navbar-left">
+        <ul class="uk-navbar-nav">
+          <li>
+            <a class="uk-navbar-toggle" href="#" uk-toggle="target: #sidemenu">
+              <span uk-navbar-toggle-icon></span> <span class="uk-margin-small-left uk-visible@s">Menu</span>
+            </a>
+          </li>
+          <li>
+            <a>
+              <span class="uk-text-lead uk-text-middle ng-cloak">{{ logs.length }}</span><span class="uk-visible@s">&nbsp;messages</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="nav-overlay uk-navbar-right">
+        <a class="uk-navbar-toggle" uk-search-icon uk-toggle="target: .nav-overlay; animation: uk-animation-fade" href="#"></a>
+      </div>
+      <div class="nav-overlay uk-navbar-left uk-flex-1" hidden>
+        <div class="uk-navbar-item uk-width-expand">
+          <form class="uk-search uk-search-navbar uk-width-1-1">
+            <input class="uk-search-input" type="search" placeholder="Search..." ng-model="options.q" ng-model-options="{debounce: 150}" ng-change="query()" ng-trim="false" autofocus>
+          </form>
+        </div>
+        <a class="uk-navbar-toggle" uk-close uk-toggle="target: .nav-overlay; animation: uk-animation-fade" href="#" ng-click="options.q = ''"></a>
+      </div>
+    </nav>
+  </div>
+
+  <div id="sidemenu" uk-offcanvas="mode: none; overlay: true">
+    <div class="uk-offcanvas-bar ng-cloak">
+      <ul class="uk-nav uk-nav-default">
+        <li class="uk-active"><a href="#">Apps</a></li>
+        <li class="uk-parent">
+          <ul class="uk-nav-sub">
+            <li ng-repeat="(name, value) in options.apps track by $index">
+              <label>
+                <input type="checkbox" ng-model="options.apps[name].status">
+                <label id="color-picker-wrapper" ng-style="{'background-color': options.apps[name].color}">
+                  <input id="inp" type="color" ng-model="options.apps[name].color">
+                </label><span class="uk-margin-left" ng-bind="name"></span>
+              </label>
+            </li>
+          </ul>
+        </li>
+        <li class="uk-nav-header">options</li>
+        <li class="uk-parent">
+          <a href="#">Show lines: <span ng-if="options.totalDisplayed === 0">unlimited</span><span ng-if="options.totalDisplayed !== 0">{{ options.totalDisplayed }}</span></a>
+          <ul class="uk-nav-sub">
+            <li>
+              <div class="uk-margin">
+                <input class="uk-input" type="number" ng-model="options.totalDisplayed" ng-model-options="{debounce: 1500}" placeholder="Show lines: std(250)">
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li class="uk-parent">
+          <a href="#">Max limit: <span ng-if="options.maxcount === 0">unlimited</span><span ng-if="options.maxcount !== 0">{{ options.maxcount }}</span></a>
+          <ul class="uk-nav-sub">
+            <li>
+              <div class="uk-margin">
+                <input class="uk-input" type="number" ng-model="options.maxcount" ng-model-options="{debounce: 1500}" placeholder="0 = unlimited">
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li class="uk-parent">
+          <a href="#">Theme</a>
+          <ul class="uk-nav-sub">
+            <li>
+              <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+                <label><input class="uk-checkbox" type="checkbox" ng-checked="options.dark" ng-model="options.dark"> Dark</label>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li class="uk-nav-divider"></li>
+        <li><a ng-click="reset()"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Delete settings</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div scroll-glue="options.glued" class="scrollbar">
+    <div class="uk-container-expand">
+      <table class="uk-table uk-table-hover uk-table-small " ng-cloak>
+        <thead>
+          <tr>
+            <th class="uk-table-shrink uk-text-nowrap uk-text-baseline">
+              <a href="#" ng-click="options.orderByField = 'timestamp'; options.reverseSort = !options.reverseSort">
+                TimeStamp <span ng-if="options.orderByField === 'timestamp'"><span ng-show="!options.reverseSort" uk-icon="triangle-up"></span><span ng-show="options.reverseSort" uk-icon="triangle-down"></span></span>
+              </a>
+            </th>
+            <th class="uk-table-shrink uk-text-nowrap uk-text-baseline">
+              <a href="#" ng-click="options.orderByField = 'app'; options.reverseSort = !options.reverseSort">
+                App <span ng-if="options.orderByField === 'app'"><span ng-show="!options.reverseSort" uk-icon="triangle-up"></span><span ng-show="options.reverseSort" uk-icon="triangle-down"></span></span>
+              </a>
+            </th>
+            <th class="uk-table-shrink uk-text-nowrap uk-text-baseline">
+              <a href="#" ng-click="options.orderByField = 'lvl'; options.reverseSort = !options.reverseSort">
+                Level <span ng-if="options.orderByField === 'lvl'"><span ng-show="!options.reverseSort" uk-icon="triangle-up"></span><span ng-show="options.reverseSort" uk-icon="triangle-down"></span></span>
+              </a>
+            </th>
+            <th class="uk-table-expand uk-text-nowrap uk-text-baseline">
+              <a href="#" ng-click="options.orderByField = 'msg'; options.reverseSort = !options.reverseSort">
+                Message <span ng-if="options.orderByField === 'msg'"><span ng-show="!options.reverseSort" uk-icon="triangle-up"></span><span ng-show="options.reverseSort" uk-icon="triangle-down"></span></span>
+              </a>
+            </th>
+          </tr>
+        </thead>
+        <tbody ng-repeat="log in logs | filter: options.q ? { $: options.q } : options.lvl ? { lvl: options.lvl } : options.app ? { app: options.app } : AppFilter: options.strict | orderBy: options.orderByField : options.reverseSort | limitTo: -options.totalDisplayed track by $index">
+          <tr uk-height-match>
+            <td class="uk-text-nowrap"><span ng-bind="log.timestamp | date: options.timestampFormat"></span></td>
+            <td class="uk-text-nowrap"><span ng-style="{ color: options.apps[log.app].color }" ng-click="FilterApp(log.app)" ng-bind="log.app"></span></td>
+            <td class="uk-text-uppercase uk-text-small" ng-click="FilterLevel(log.lvl)" ng-bind-html="trustAsHtml(log.lvl)"></td>
+            <td class="uk-text-left" ng-bind-html="trustAsHtml(log.msg)"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+
+<script src="js/uikit.min.js"></script> <!-- v3.0.0-beta.40 getuikit.com -->
+<script src="js/uikit-icons.min.js"></script> <!-- v3.0.0-beta.40 -->
+
+<script src="js/angular.min.js"></script> <!-- 1.6.9 -->
+<script src="js/angular-sanitize.min.js"></script> <!-- 1.6.9 -->
+<script src="js/ng-scroll-glue.min.js"></script> <!-- 2.0.10 github.com/FinalDevStudio/ng-scroll-glue -->
+<script src="js/ngStorage.min.js"></script> <!-- 0.3.11 github.com/gsklee/ngStorage -->
+
+<script src="js/protobuf.min.js"></script> <!-- v6.8.6 github.com/dcodeIO/protobuf.js -->
+<script src="js/app.js"></script>
+</html>
