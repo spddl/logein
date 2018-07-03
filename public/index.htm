@@ -122,7 +122,7 @@
           </tr>
         </thead>
         <tbody ng-repeat="log in logs | filter: options.q ? { $: options.q } : options.lvl ? { lvl: options.lvl } : options.app ? { app: options.app } : AppFilter: options.strict | orderBy: options.orderByField : options.reverseSort | limitTo: -options.totalDisplayed track by $index">
-          <tr uk-height-match>
+          <tr>
             <td class="uk-text-nowrap"><span ng-bind="log.timestamp | date: options.timestampFormat"></span></td>
             <td class="uk-text-nowrap"><span ng-style="{ color: options.apps[log.app].color }" ng-click="FilterApp(log.app)" ng-bind="log.app"></span></td>
             <td class="uk-text-uppercase uk-text-small" ng-click="FilterLevel(log.lvl)" ng-bind-html="trustAsHtml(log.lvl)"></td>
