@@ -96,7 +96,11 @@ app.controller('Ctrl', function controller ($scope, $sce, $timeout, $window, $q,
       const message = LogMessage.decode(data)
 
       // Add to Array
-      $scope.logs = $scope.logs.concat(message.data)
+      if (message.data.length === 1) {
+        $scope.logs.push(message.data[0])
+      } else {
+        $scope.logs = $scope.logs.concat(message.data)
+      }
 
       // update view
       if ($scope.options.update) {
