@@ -1,5 +1,10 @@
 'use strict'
-const app = angular.module('App', ['ngSanitize', 'ngScrollGlue', 'ngStorage'])
+const app = angular.module('App', ['ngSanitize', 'ngScrollGlue', 'ngStorage'], function ($locationProvider) {
+  $locationProvider.html5Mode({
+    enabled: true,
+    requireBase: false
+  })
+})
 
 app.config(['$compileProvider', function ($compileProvider) { // https://docs.angularjs.org/guide/production
   $compileProvider.debugInfoEnabled(false)
@@ -12,7 +17,7 @@ app.filter('htmlToPlaintext', function () {
   }
 })
 
-app.controller('Ctrl', function controller ($scope, $sce, $timeout, $window, $q, $localStorage) {
+app.controller('Ctrl', function controller ($scope, $sce, $window, $q, $localStorage, $location) {
   $scope.optionsDefault = {
     dark: true,
     q: '',
@@ -46,9 +51,9 @@ app.controller('Ctrl', function controller ($scope, $sce, $timeout, $window, $q,
   }
 
   // on startup
-  $scope.options.q = ''
-  $scope.options.app = ''
-  $scope.options.lvl = ''
+  $scope.options.q = $location.search().q || ''
+  $scope.options.app = $location.search().app || ''
+  $scope.options.lvl = $location.search().lvl || ''
   $scope.options.glued = true
   $scope.options.update = true
   timestampFormat()
